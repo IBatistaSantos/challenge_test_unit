@@ -3,10 +3,9 @@ import { hash } from "bcryptjs";
 import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUsersRepository";
-import { IncorrectEmailOrPasswordError } from "./IncorrectEmailOrPasswordError";
 
 let authenticateUseCase: AuthenticateUserUseCase;
-let usersRepository: InMemoryUsersRepository;
+let usersRepository: IUsersRepository;
 
 describe("Authenticate User", () => {
   beforeEach(() => {
@@ -16,40 +15,16 @@ describe("Authenticate User", () => {
 
   it("should be able to authenticate an user", async () => {
     const user = await usersRepository.create({
-      name: "User test",
-      email: "user@test.com",
-      password: "123123",
+      name: "John do",
+      email: "john@do.com",
+      password: await hash("123", 8),
     });
 
     const authUser = await authenticateUseCase.execute({
       email: user.email,
-      password: "123123",
+      password: "123",
     });
 
     expect(authUser).toHaveProperty("token");
-  });
-
-  it("should not be able to authenticate an user not exists ", async () => {
-    expect(async () => {
-      await authenticateUseCase.execute({
-        email: "user@test.com",
-        password: "123123",
-      });
-    }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError);
-  });
-
-  it("should not be able to authenticate an user password incorrect ", async () => {
-    expect(async () => {
-      const user = await usersRepository.create({
-        name: "User test",
-        email: "user@test.com",
-        password: "123123",
-      });
-
-      await authenticateUseCase.execute({
-        email: user.email,
-        password: "incorrect",
-      });
-    }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError);
   });
 });
