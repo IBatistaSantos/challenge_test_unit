@@ -15,8 +15,8 @@ describe("Authenticate User", () => {
 
   it("should be able to authenticate an user", async () => {
     const user = await usersRepository.create({
-      name: "John do",
-      email: "john@do.com",
+      name: "User Test",
+      email: "test@test.com",
       password: await hash("123", 8),
     });
 
